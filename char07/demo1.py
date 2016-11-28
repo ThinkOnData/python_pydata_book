@@ -6,6 +6,7 @@
 # pandas.merge：根据一个键或多个键将不同DataFrame中的行连接起来
 # pandas.concat:沿着一条轴将多个对象堆叠到一起
 # combine_first:将重复数据编接在一起，用一个对象的值填充另一个对象中的缺失值
+import re
 
 import pandas as pd
 df1= pd.DataFrame({"key":["b","b","a","c","a","a","b"],"data1":range(7)})
@@ -244,17 +245,37 @@ movies=pd.read_table("movies.dat",sep="::",header=None,names=mnames,engine="pyth
 # print movies[:10]
 
 
+genre_iter=(set(x.split("|"))for x in movies.genres)
+genres=sorted(set.union(*genre_iter))
+# print genres
+
+dummies=pd.DataFrame(np.zeros((len(movies),len(genres))),columns=genres)
+
+for i,gen in enumerate(movies.genres):
+    dummies.ix[i,gen.split("|")]=1
+    # print gen.split("|")
+
+movies_windic=movies.join(dummies.add_prefix("Genre_"))
+# print movies_windic.ix[0]
 
 
+values=np.random.rand(10)
+bins=[0,0.2,0.4,0.6,0.8,1]
+# print pd.get_dummies(pd.cut(values,bins))
 
 
+val="a,b,  guido"
+pieces=[x.strip() for x in val.split(",")]
+# print pieces
+# print "::".join(pieces)
 
 
+data={"Dave":"dave@google.com","Steve":"steve@gmail.com","Rob":"rob@gmail.com","Wes":np.nan}
+data=pd.Series(data)
+# print data
 
+pattern="([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\\.([A-Z]{2,4})"
+# print data.str.findall(pattern,flags=re.IGNORECASE)
 
-
-
-
-
-
-
+matches=data.str.match(pattern,flags=re.IGNORECASE)
+# print matches
