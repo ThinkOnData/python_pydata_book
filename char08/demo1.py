@@ -113,19 +113,65 @@ from numpy.random import randn
 
 
 import pandas as pd
-s=pd.Series(np.random.randn(10).cumsum(),index=np.arange(0,100,10))
-s.plot()
-plt.show()
+# s=pd.Series(np.random.randn(10).cumsum(),index=np.arange(0,100,10))
+# s.plot()
+# plt.show()
 
 
 
+# df=pd.DataFrame(np.random.randn(10,4).cumsum(0),
+#                 columns=["A","B","C","D"],
+#                 index=np.arange(0,100,10))
+# df.plot()
+# plt.show()
 
 
+#柱状图
+# fig,axes=plt.subplots(2,1)
+# data=pd.Series(np.random.randn(16),index=list("abcdefghijklmnop"))
+# data.plot(kind="bar",ax=axes[0],color="k")
+# data.plot(kind="barh",ax=axes[1],color="k")
+# plt.show()
 
 
+# df=pd.DataFrame(np.random.randn(6,4),
+#                 index=["one","two","three","four","five","six"],
+#                 columns=pd.Index(["A","B","C","D"],name="Genus"))
+#
+# df.plot(kind="barh",stacked=True)
+# plt.show()
 
 
+# tips=pd.read_csv("tips.csv")
+# party_counts=pd.crosstab(tips.day,tips.size)
+# print party_counts
+
+# #规格化
+# party_pcts=party_counts.div(party_counts.sum(1).astype(float),axis=0)
+# # print party_pcts
+# party_pcts.plot(kind="bar",stacked=True)
+# plt.show()
 
 
+# comp1=np.random.normal(0,1,size=200)
+# comp2=np.random.normal(10,2,size=200)
+# values=pd.Series(np.concatenate([comp1,comp2]))
+# values.hist(bins=100,color="k",normed=True)
+
+# from scipy.stats import gaussian_kde
+# values.plot(kind="kde",style="k--")
+# plt.show()
 
 
+# macro=pd.read_csv("macrodata.csv")
+# data=macro[["cpi","m1","tbilrate","unemp"]]
+#
+# trans_data=np.log(data).diff().dropna()
+# print trans_data[-5:]
+
+# plt.scatter(trans_data["m1"],trans_data["unemp"])
+# plt.title("Changes in log %s vs. log %s" % ("m1","unemp"))
+# plt.show()
+
+# pd.scatter_matrix(trans_data)
+# plt.show()
