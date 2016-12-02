@@ -157,7 +157,7 @@ import pandas as pd
 # comp2=np.random.normal(10,2,size=200)
 # values=pd.Series(np.concatenate([comp1,comp2]))
 # values.hist(bins=100,color="k",normed=True)
-
+#
 # from scipy.stats import gaussian_kde
 # values.plot(kind="kde",style="k--")
 # plt.show()
