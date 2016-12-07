@@ -1,6 +1,6 @@
-#coding:utf-8
+# coding:utf-8
 
-#绘制地图：图形化显示海地地震危机数据
+# 绘制地图：图形化显示海地地震危机数据
 
 import pandas as pd
 import numpy as np
@@ -89,6 +89,7 @@ data = data[(data.LATITUDE > 18) & (data.LATITUDE < 20) &
             (data.LONGITUDE > -75) & (data.LONGITUDE < -70)
             & data.CATEGORY.notnull()]
 
+
 def to_cat_list(catstr):
     stripped = (x.strip() for x in catstr.split(','))
     return [x for x in stripped if x]
@@ -118,15 +119,13 @@ def get_code(seq):
 all_codes = get_code(all_cats)
 code_index = pd.Index(np.unique(all_codes))
 dummy_frame = pd.DataFrame(np.zeros((len(data), len(code_index))),
-                        index=data.index, columns=code_index)
-
+                           index=data.index, columns=code_index)
 
 for row, cat in zip(data.index, data.CATEGORY):
     codes = get_code(to_cat_list(cat))
     dummy_frame.ix[row, codes] = 1
 
 data = data.join(dummy_frame.add_prefix('category_'))
-
 
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
@@ -170,13 +169,6 @@ for code, ax in zip(to_plot, axes.flat):
     m.plot(x, y, 'k.', alpha=0.5)
     ax.set_title('%s: %s' % (code, english_mapping[code]))
 
-to_plot = ['2a', '1', '3c', '7a']
-
-lllat = 17.25
-urlat = 20.25
-lllon = -75
-urlon = -71
-
 
 def make_plot():
     for i, code in enumerate(to_plot):
@@ -193,7 +185,10 @@ def make_plot():
         m.plot(x, y, 'k.', alpha=0.5)
         ax.set_title('%s: %s' % (code, english_mapping[code]))
 
+
 make_plot()
 
-shapefile_path = 'PortAuPrince_Roads/PortAuPrince_Roads'
+shapefile_path = "PortAuPrince_Roads/PortAuPrince_Roads"
 m.readshapefile(shapefile_path, 'roads')
+
+plt.show()

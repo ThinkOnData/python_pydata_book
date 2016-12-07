@@ -130,3 +130,105 @@ result = tips.groupby("smoker")["tip_pct"].describe()
 # print tips.groupby("smoker").apply(top)
 
 
+frame = pd.DataFrame({"data1": np.random.randn(1000),
+                      "data2": np.random.randn(1000)})
+factor = pd.cut(frame.data1, 4)
+
+
+# print factor[:10]
+
+def get_stats(group):
+    return {"min": group.min(), "max": group.max(),
+            "count": group.count(), "mean": group.mean()}
+
+
+grouped = frame.data2.groupby(factor)
+
+# print grouped.apply(get_stats).unstack()
+
+grouping = pd.qcut(frame.data1, 10, labels=False)
+grouped = frame.data2.groupby(grouping)
+# print grouped.apply(get_stats).unstack()
+
+s = pd.Series(np.random.randn(6))
+s[::2] = np.nan
+# print s.fillna(s.mean())
+
+states = ["Ohio", "New York", "Vermont", "Florida", "Oregon", "Nevada", "California", "Idaho"]
+group_key = ["East"] * 4 + ["West"] * 4
+data = pd.Series(np.random.randn(8), index=states)
+data[["Vermont", "Nevada", "Idaho"]] = np.nan
+# print data
+fill_mean = lambda g: g.fillna(g.mean())
+# print data.groupby(group_key).apply(fill_mean)
+
+
+fill_values = {"East": 0.5, "West": -1}
+
+fill_func = lambda g: g.fillna(fill_values[g.name])
+# print data.groupby(group_key).apply(fill_func)
+
+
+
+# 随机采样和排列
+suits = ["H", "S", "C", "D"]
+card_val = (range(1, 11) + [10] * 3) * 4
+base_names = ["A"] + range(2, 11) + ["J", "K", "Q"]
+cards = []
+for suit in ["H", "S", "C", "D"]:
+    cards.extend(str(num) + suit for num in base_names)
+deck = pd.Series(card_val, index=cards)
+
+
+def draw(deck, n=5):
+    return deck.take(np.random.permutation(len(deck))[:n])
+
+
+# print draw(deck)
+
+get_suit = lambda card: card[-1]
+# print deck.groupby(get_suit).apply(draw, n=2)
+
+# 分组加权平均数和相关系数
+# 根据groupby的“拆分-应用-合并”范式，DataFrame的列与列之间或两个Series之间的运算成为一种标准作业
+
+df = pd.DataFrame({"category": ["a", "a", "a", "a", "b", "b", "b", "b"],
+                   "data": np.random.randn(8),
+                   "weights": np.random.rand(8)})
+
+grouped = df.groupby("category")
+get_wavg = lambda g: np.average(g["data"], weights=g["weights"])
+# print grouped.apply(get_wavg)
+
+close_px = pd.read_csv("stock_px.csv", parse_dates=True, index_col=0)
+rets = close_px.pct_change().dropna()
+spx_corr = lambda x: x.corrwith(x["SPX"])
+by_year = rets.groupby(lambda x: x.year)
+# print by_year.apply(spx_corr)
+# print by_year.apply(lambda g: g["AAPL"].corr(g["MSFT"]))
+
+
+# 面向分组的线性回归
+# 对各数据块执行普通最小二乘法回归
+
+import statsmodels.api as sm
+
+
+def regress(data, yvar, xvars):
+    Y = data[yvar]
+    X = data[xvars]
+    X["intercept"] = 1.
+    result = sm.OLS(Y, X).fit()
+    return result.params
+
+# print by_year.apply(regress,"AAPL",["SPX"])
+
+
+# 透视表和交叉表
+# print tips.pivot_table(index=["sex","smoker"])
+# print tips.pivot_table(["tip_pct","size"],index=["sex","day"],columns="smoker")
+
+# print tips.pivot_table(["tip_pct","size"],index=["sex","day"],columns="smoker",margins=True)
+
+# print tips.pivot_table("tip_pct", index=["sex", "smoker"], columns="day", aggfunc=len, margins=True)
+# print tips.pivot_table("size",index=["time","sex","smoker"],columns="day",aggfunc='sum',fill_value=0)
