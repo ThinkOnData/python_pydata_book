@@ -188,3 +188,19 @@ ts = pd.Series(np.random.randn(len(rng)), index=rng)
 # print ts.resample("M", kind="period").mean()
 
 
+# 降采样
+rng = pd.date_range("1/1/2000", periods=12, freq="T")
+ts = pd.Series(np.arange(12), index=rng)
+# print ts.resample("5min",label="left").sum()
+# print ts.resample("5min",label="right").sum()
+# print ts.resample("5min",closed="left").sum()
+# print ts.resample("5min", loffset="-1s").sum()
+# print ts.resample("5min").ohlc()
+
+# 通过groupby进行重采样
+rng = pd.date_range("1/1/2000", periods=100, freq="D")
+ts = pd.Series(np.arange(100), index=rng)
+# print ts
+# print ts.groupby(lambda x: x.month).mean()
+# print ts.groupby(lambda x: x.weekday).mean()
+
