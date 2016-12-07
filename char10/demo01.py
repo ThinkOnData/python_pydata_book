@@ -85,3 +85,46 @@ grouped = dup_ts.groupby(level=0)
 
 # 日期的范围、频率以及移动
 # print ts.resample("D")
+
+# 生成日期范围
+index = pd.date_range("4/1/2012", "6/1/2012")
+# print index
+# print pd.date_range(start="4/1/2012",periods=20)
+
+# print pd.date_range("1/1/2000","12/1/2000",freq="BM")
+# print pd.date_range("5/2/2012 12:56:31", periods=5, normalize=True)
+
+
+# 频率和日期偏移量
+from pandas.tseries.offsets import Hour, Minute
+
+hour = Hour(4)
+# print hour
+
+# print pd.date_range("1/1/2000","1/3/2000 23:59",freq="4h")
+
+# print Hour(2)+Minute(30)
+
+# print pd.date_range("1/1/2000",periods=10,freq="1h30min")
+
+
+ts = pd.Series(np.random.randn(4),
+               index=pd.date_range("1/1/2000", periods=4, freq="M"))
+# print ts
+# print ts.shift(2)
+# print ts.shift(-2)
+
+# print ts.shift(2,freq="M")
+# print ts/ts.shift(1)-1
+
+from pandas.tseries.offsets import Day, MonthEnd
+
+now = datetime(2011, 11, 17)
+# print now+3*Day()
+# print now+MonthEnd(2)
+
+offset=MonthEnd()
+# print offset
+# print offset.rollforward(now)
+# print offset.rollback(now)
+
