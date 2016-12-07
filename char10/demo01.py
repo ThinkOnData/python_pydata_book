@@ -123,8 +123,68 @@ now = datetime(2011, 11, 17)
 # print now+3*Day()
 # print now+MonthEnd(2)
 
-offset=MonthEnd()
+offset = MonthEnd()
 # print offset
 # print offset.rollforward(now)
 # print offset.rollback(now)
+
+ts = pd.Series(np.random.randn(20),
+               index=pd.date_range("1/15/2000", periods=20, freq="4d"))
+# print ts.groupby(offset.rollforward).mean()
+
+# print ts.resample("M").mean()
+
+import pytz
+
+# print pytz.common_timezones[-5:]
+tz = pytz.timezone("US/Eastern")
+# print tz
+
+rng = pd.date_range("3/9/2012", periods=6, freq="D")
+ts = pd.Series(np.random.randn(len(rng)), index=rng)
+# print ts.index.tz
+
+ts_utc = ts.tz_localize("UTC")
+# print ts_utc.index
+
+# print ts_utc.tz_convert("US/Mountain").index
+
+
+# 时期及其算数计算
+p = pd.Period(2007, freq="A-DEC")
+# print p+2
+
+
+values = ["2001Q3", "2002Q2", "2003Q1"]
+index = pd.PeriodIndex(values, freq="Q-DEC")
+# print index
+
+
+p = pd.Period("2007", freq="A-DEC")
+# print p.asfreq("M", how="start")
+# print p.asfreq("M",how="end")
+
+rng = pd.period_range("2011Q3", "2012Q4", freq="Q-JAN")
+ts = pd.Series(np.arange(len(rng)), index=rng)
+new_rng = (rng.asfreq("B", "e") - 1).asfreq("T", "s") + 16
+ts.index = new_rng.to_timestamp()
+# print ts
+
+# 通过数组创建PeriodIndex
+data = pd.read_csv("E:\workspace_git\python_pydata_book\char08\macrodata.csv")
+# print data.quarter
+
+index = pd.PeriodIndex(year=data.year, quarter=data.quarter, freq="Q-DEC")
+# print index
+
+data.index = index
+# print data.infl
+
+
+rng = pd.date_range("1/1/2000", periods=100, freq="D")
+ts = pd.Series(np.random.randn(len(rng)), index=rng)
+# print ts
+# print ts.resample("M").mean()
+# print ts.resample("M", kind="period").mean()
+
 
