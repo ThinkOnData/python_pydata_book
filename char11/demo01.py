@@ -110,3 +110,28 @@ m_rets = (1 + returns).resample("M", kind="period").prod() - 1
 
 
 # 分组变换和分析
+
+import random;
+
+random.seed(0)
+import string
+
+N = 1000
+
+
+def rands(n):
+    choices = string.ascii_uppercase
+    return ''.join([random.choice(choices) for _ in xrange(n)])
+
+
+tickers = np.array([rands(5) for _ in xrange(N)])
+
+M = 500
+df = pd.DataFrame({'Momentum': np.random.randn(M) / 200 + 0.03,
+                   'Value': np.random.randn(M) / 200 + 0.08,
+                   'ShortInterest': np.random.randn(M) / 200 - 0.02},
+                  index=tickers[:M])
+
+ind_names = np.array(["FINANCIAL", "TECH"])
+sampler = np.random.randint(0, len(ind_names), N)
+industries=pd.Series(ind_names["sam"])
