@@ -13,5 +13,3 @@ Materials and IPython notebooks for "Python for Data Analysis" by Wes McKinney, 
 * [Chapter 10: Time Series]
 * [Chapter 11: Financial and Economic Data Applications]
 * [Chapter 12: Advanced NumPy]
-* [Python Appendix]
-* [2012 Federal Election Commission Database]
