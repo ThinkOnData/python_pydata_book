@@ -132,6 +132,93 @@ df = pd.DataFrame({'Momentum': np.random.randn(M) / 200 + 0.03,
                    'ShortInterest': np.random.randn(M) / 200 - 0.02},
                   index=tickers[:M])
 
-ind_names = np.array(["FINANCIAL", "TECH"])
+ind_names = np.array(['FINANCIAL', 'TECH'])
 sampler = np.random.randint(0, len(ind_names), N)
-industries=pd.Series(ind_names["sam"])
+industries = pd.Series(ind_names[sampler], index=tickers,
+                       name='industry')
+
+by_industry = df.groupby(industries)
+
+
+# 行业内标准化处理
+def zscore(group):
+    return (group - group.mean()) / group.std()
+
+
+df_stand = by_industry.apply(zscore)
+
+# print df_stand.groupby(industries).agg(["mean", "std"])
+
+# 行业内降序排名
+ind_rank = by_industry.rank(ascending=False)
+# print ind_rank.groupby(industries).agg(["min", "max"])
+
+# 行业内排名和标准化
+# print by_industry.apply(lambda x: zscore(x.rank()))
+
+# 分组因子
+from numpy.random import rand
+
+fac1, fac2, fac3 = np.random.rand(3, 1000)
+ticker_subset = tickers.take(np.random.permutation(N)[:1000])
+
+# 因子加权和噪声
+port = pd.Series(0.7 * fac1 - 1.2 * fac2 + 0.3 * fac3 + rand(1000),
+                 index=ticker_subset)
+factors = pd.DataFrame({"f1": fac1, "f2": fac2, "f3": fac3},
+                       index=ticker_subset)
+
+import statsmodels.api as sm
+
+# print sm.OLS(port,factors).fit().summary()
+
+# def beta_exposure(chunk, factors=None):
+#     return pd.ols(y=chunk, x=factors).beta
+
+
+# by_ind = port.groupby(industries)
+# exposures = by_ind.apply(beta_exposure, factors=factors)
+# print exposures.unstack()
+
+
+# 十分位和四分位分析
+from pandas_datareader import data as web
+
+data = web.DataReader("SPY", "yahoo", "2006-001-01")
+# print data
+
+px = data['Adj Close']
+returns = px.pct_change()
+
+
+def to_index(rets):
+    index = (1 + rets).cumprod()
+    first_loc = max(index.index.get_loc(index.idxmax()) - 1, 0)
+    index.values[first_loc] = 1
+    return index
+
+
+def trend_signal(rets, lookback, lag):
+    signal = pd.Series.rolling(rets, lookback, min_periods=lookback - 5).sum()
+    return signal.shift(lag)
+
+
+signal = trend_signal(returns, 100, 3)
+trade_friday = signal.resample('W-FRI').resample('B').ffill()
+trade_rets = trade_friday.shift(1) * returns
+trade_rets = trade_rets[:len(returns)]
+
+# to_index(trade_rets).plot()
+
+from matplotlib import pyplot as plt
+
+# plt.show()
+
+
+vol = pd.Series.rolling(returns, 250, min_periods=200).std() * np.sqrt(250)
+
+
+def sharpe(rets, ann=250):
+    return rets.mean() / rets.std() * np.sqrt(250)
+
+# print trade_rets.groupby(pd.qcut(vol, 4)).agg(sharpe)
